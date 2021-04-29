@@ -1,7 +1,3 @@
-## 感谢
-
-项目基于 [sbzhu/weworkapi_golang](https://github.com/sbzhu/weworkapi_golang) 做了原方法改动以及添加对新接口的支持并补充使用说明.
-
 ## weworkapi_golang
 
 weworkapi_golang 是为了简化开发者对企业微信API接口的使用而设计的，API调用加解密库之golang版本
