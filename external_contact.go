@@ -20,6 +20,13 @@ type ExternalContactGetReq struct {
 	ExternalUserid string `json:"external_userid"`
 }
 
+type ExternalContactEditCorpTagReq struct {
+	Userid         string   `json:"userid"`
+	ExternalUserid string   `json:"external_userid"`
+	AddTag         []string `json:"add_tag"`
+	RemoveTag      []string `json:"remove_tag"`
+}
+
 type ExternalContactGetResp struct {
 	core.Error
 	ExternalContact struct {
@@ -120,6 +127,32 @@ func (s *Server) ExternalContactGet(req *ExternalContactGetReq) (resp *ExternalC
 		return
 	}
 	if resp.ErrCode != 0 || resp.ErrMsg != "ok" {
+		err = errors.New(resp.ErrMsg)
+		return
+	}
+
+	return
+}
+
+// 编辑客户企业标签
+// 企业可通过此接口为指定成员的客户添加上由企业统一配置的标签。
+// https://work.weixin.qq.com/api/doc/90000/90135/92118
+func (s *Server) ExternalContactEditCorpTag(req *ExternalContactEditCorpTagReq) (resp *core.Error, err error) {
+	var (
+		u = OpenApiUrl + "externalcontact/mark_tag"
+	)
+	token, err := s.Token()
+	if err != nil {
+		return
+	}
+
+	resp = &core.Error{}
+
+	err = core.PostJson(s.AuthToken2url(u, token), req, resp)
+	if err != nil {
+		return
+	}
+	if resp.ErrCode != 0 {
 		err = errors.New(resp.ErrMsg)
 		return
 	}
