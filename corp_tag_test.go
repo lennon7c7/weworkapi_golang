@@ -46,33 +46,19 @@ func TestCorpTagAdd(t *testing.T) {
 	}
 
 	// 添加新的标签组
+	var thirdPartyTag []weworkapi_golang.CorpTag
+	thirdPartyTag = append(thirdPartyTag, weworkapi_golang.CorpTag{
+		Name: "不感兴趣",
+	})
+	thirdPartyTag = append(thirdPartyTag, weworkapi_golang.CorpTag{
+		Name: "有意向",
+	})
+	thirdPartyTag = append(thirdPartyTag, weworkapi_golang.CorpTag{
+		Name: "已购买",
+	})
 	req := weworkapi_golang.CorpTagReq{
-		GroupName: "客户购买意愿等级",
-		Tag: []struct {
-			ID         string `json:"id"`
-			Name       string `json:"name"`
-			CreateTime int    `json:"create_time"`
-			Order      int    `json:"order"`
-			Deleted    bool   `json:"deleted"`
-		}{
-			{Name: "不感兴趣", Order: 1},
-			{Name: "有意向", Order: 2},
-			{Name: "已购买", Order: 3},
-		},
-	}
-	// 添加新的标签
-	req = weworkapi_golang.CorpTagReq{
-		GroupID:   "etuA1sCQAA97QopllG8bWWqNEIuEOPtQ",
-		GroupName: "客户购买意愿等级",
-		Tag: []struct {
-			ID         string `json:"id"`
-			Name       string `json:"name"`
-			CreateTime int    `json:"create_time"`
-			Order      int    `json:"order"`
-			Deleted    bool   `json:"deleted"`
-		}{
-			{Name: "有意向", Order: 2},
-		},
+		GroupName: "客户购买意愿等级2",
+		Tag:       thirdPartyTag,
 	}
 	resp, err := service.CorpTagAdd(&req)
 	if err != nil {
