@@ -9,6 +9,8 @@ import (
 
 type ExternalContactReq struct {
 	UserID string `json:"userid"`
+	Cursor string `json:"cursor"`
+	Limit  int    `json:"limit"`
 }
 
 type ExternalContactResp struct {
@@ -78,6 +80,12 @@ type ExternalContactGetResp struct {
 	NextCursor string `json:"next_cursor"`
 }
 
+type ExternalContactBatchGetResp struct {
+	core.Error
+	ExternalContactList []ExternalContactGetResp `json:"external_contact_list"`
+	NextCursor          string                   `json:"next_cursor"`
+}
+
 // 获取客户列表
 // https://open.work.weixin.qq.com/api/doc/90000/90135/92113
 func (s *Server) ExternalContactList(req *ExternalContactReq) (resp *ExternalContactResp, err error) {
@@ -130,6 +138,45 @@ func (s *Server) ExternalContactGet(req *ExternalContactGetReq) (resp *ExternalC
 		err = errors.New(resp.ErrMsg)
 		return
 	}
+
+	return
+}
+
+// 批量获取客户详情
+// 企业/第三方可通过此接口获取指定成员添加的客户信息列表
+// https://open.work.weixin.qq.com/api/doc/90000/90135/92994
+func (s *Server) ExternalContactBatchGet(req *ExternalContactReq) (resp *ExternalContactBatchGetResp, err error) {
+	var (
+		u = OpenApiUrl + "externalcontact/batch/get_by_user"
+	)
+	token, err := s.Token()
+	if err != nil {
+		return
+	}
+
+	resp = &ExternalContactBatchGetResp{}
+
+	var externalContactList []ExternalContactGetResp
+	for {
+		err = core.PostJson(s.AuthToken2url(u, token), req, resp)
+		if err != nil {
+			return
+		}
+		if resp.ErrCode != 0 {
+			err = errors.New(resp.ErrMsg)
+			return
+		}
+
+		externalContactList = append(externalContactList, resp.ExternalContactList...)
+		req.Cursor = resp.NextCursor
+		//log.Println("resp.NextCursor: ", resp.NextCursor)
+		if resp.NextCursor == "" {
+			break
+		}
+	}
+
+	resp.ExternalContactList = externalContactList
+	//log.Println("externalContactList: ", len(externalContactList))
 
 	return
 }
