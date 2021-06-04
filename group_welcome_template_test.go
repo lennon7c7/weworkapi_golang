@@ -23,10 +23,11 @@ func TestGroupWelcomeTemplateAdd(t *testing.T) {
 	}
 
 	req := weworkapi_golang.GroupWelcomeTemplateReq{
-		Text: struct {
-			Content string `json:"content,omitempty"`
-		}{Content: "亲爱的%NICKNAME%用户，你好.."},
-		Notify: 0,
+		Image:       &weworkapi_golang.GroupWelcomeTemplateImage{PicURL: "https://wework.qpic.cn/wwpic/981282_5gXAwYbpQzugZnE_1622808766/0"},
+		Link:        nil,
+		Miniprogram: nil,
+		Text:        &weworkapi_golang.GroupWelcomeTemplateText{Content: "亲爱的%NICKNAME%，你好.."},
+		Notify:      0,
 	}
 	resp, err := service.GroupWelcomeTemplateAdd(&req)
 	if err != nil {
@@ -51,7 +52,7 @@ func TestGroupWelcomeTemplateGet(t *testing.T) {
 		return
 	}
 
-	req := weworkapi_golang.GroupWelcomeTemplateResp{
+	req := weworkapi_golang.GroupWelcomeTemplateReq{
 		TemplateID: "msguA1sCQAADDSXBRSsR94WMSdyJjbl1Q",
 	}
 	resp, err := service.GroupWelcomeTemplateGet(&req)
@@ -79,10 +80,8 @@ func TestGroupWelcomeTemplateEdit(t *testing.T) {
 
 	req := weworkapi_golang.GroupWelcomeTemplateReq{
 		TemplateID: "msguA1sCQAADDSXBRSsR94WMSdyJjbl1Q",
-		Text: struct {
-			Content string `json:"content,omitempty"`
-		}{Content: "亲爱的%NICKNAME%用户，你好..."},
-		Notify: 0,
+		Text:       &weworkapi_golang.GroupWelcomeTemplateText{Content: "亲爱的%NICKNAME%，你好2.."},
+		Notify:     0,
 	}
 	resp, err := service.GroupWelcomeTemplateEdit(&req)
 	if err != nil {
@@ -107,7 +106,7 @@ func TestGroupWelcomeTemplateDel(t *testing.T) {
 		return
 	}
 
-	req := weworkapi_golang.GroupWelcomeTemplateResp{
+	req := weworkapi_golang.GroupWelcomeTemplateReq{
 		TemplateID: "msguA1sCQAADDSXBRSsR94WMSdyJjbl1Q",
 	}
 	resp, err := service.GroupWelcomeTemplateDel(&req)
