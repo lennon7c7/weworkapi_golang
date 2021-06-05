@@ -4,7 +4,20 @@ package weworkapi_golang
 import (
 	"errors"
 	"github.com/lennon7c7/weworkapi_golang/core"
+	"time"
 )
+
+type GroupMsgVideo struct {
+	MediaID string `json:"media_id"`
+}
+
+type GroupMsgAttachment struct {
+	Msgtype     string                           `json:"msgtype"`
+	Image       *GroupWelcomeTemplateImage       `json:"image,omitempty"`
+	Link        *GroupWelcomeTemplateLink        `json:"link,omitempty"`
+	Miniprogram *GroupWelcomeTemplateMiniprogram `json:"miniprogram,omitempty"`
+	Video       *GroupMsgVideo                   `json:"video,omitempty"`
+}
 
 type GroupMsgListReq struct {
 	ChatType   string `json:"chat_type"`
@@ -20,35 +33,12 @@ type GroupMsgListResp struct {
 	core.Error
 	NextCursor   string `json:"next_cursor"`
 	GroupMsgList []struct {
-		Msgid      string `json:"msgid"`
-		Creator    string `json:"creator"`
-		CreateTime string `json:"create_time"`
-		CreateType int    `json:"create_type"`
-		Text       struct {
-			Content string `json:"content"`
-		} `json:"text"`
-		Attachments []struct {
-			Msgtype string `json:"msgtype"`
-			Image   struct {
-				MediaID string `json:"media_id"`
-				PicURL  string `json:"pic_url"`
-			} `json:"image,omitempty"`
-			Link struct {
-				Title  string `json:"title"`
-				Picurl string `json:"picurl"`
-				Desc   string `json:"desc"`
-				URL    string `json:"url"`
-			} `json:"link,omitempty"`
-			Miniprogram struct {
-				Title      string `json:"title"`
-				PicMediaID string `json:"pic_media_id"`
-				Appid      string `json:"appid"`
-				Page       string `json:"page"`
-			} `json:"miniprogram,omitempty"`
-			Video struct {
-				MediaID string `json:"media_id"`
-			} `json:"video,omitempty"`
-		} `json:"attachments"`
+		Msgid       string                    `json:"msgid"`
+		Creator     string                    `json:"creator"`
+		CreateTime  string                    `json:"create_time"`
+		CreateType  int                       `json:"create_type"`
+		Text        *GroupWelcomeTemplateText `json:"text"`
+		Attachments []GroupMsgAttachment      `json:"attachments"`
 	} `json:"group_msg_list"`
 }
 
@@ -101,34 +91,11 @@ type GroupMsgSendResultListResp struct {
 }
 
 type GroupMsgAddReq struct {
-	ChatType       string   `json:"chat_type"`
-	ExternalUserid []string `json:"external_userid"`
-	Sender         string   `json:"sender"`
-	Text           struct {
-		Content string `json:"content"`
-	} `json:"text"`
-	Attachments []struct {
-		Msgtype string `json:"msgtype"`
-		Image   struct {
-			MediaID string `json:"media_id"`
-			PicURL  string `json:"pic_url"`
-		} `json:"image,omitempty"`
-		Link struct {
-			Title  string `json:"title"`
-			Picurl string `json:"picurl"`
-			Desc   string `json:"desc"`
-			URL    string `json:"url"`
-		} `json:"link,omitempty"`
-		Miniprogram struct {
-			Title      string `json:"title"`
-			PicMediaID string `json:"pic_media_id"`
-			Appid      string `json:"appid"`
-			Page       string `json:"page"`
-		} `json:"miniprogram,omitempty"`
-		Video struct {
-			MediaID string `json:"media_id"`
-		} `json:"video,omitempty"`
-	} `json:"attachments"`
+	ChatType       string                    `json:"chat_type"`
+	ExternalUserid []string                  `json:"external_userid"`
+	Sender         string                    `json:"sender"`
+	Text           *GroupWelcomeTemplateText `json:"text"`
+	Attachments    []*GroupMsgAttachment     `json:"attachments"`
 }
 
 type GroupMsgAddResp struct {
@@ -147,6 +114,18 @@ func (s *Server) GroupMsgList(req *GroupMsgListReq) (resp *GroupMsgListResp, err
 	token, err := s.Token()
 	if err != nil {
 		return
+	}
+
+	now := time.Now()
+	if req.StartTime == 0 {
+		// 开始时间默认：一个月前
+		d, _ := time.ParseDuration("-720h")
+		d1 := now.Add(d)
+		req.StartTime = int(d1.Unix())
+	}
+	if req.EndTime == 0 {
+		// 结束时间默认：当前时间
+		req.EndTime = int(now.Unix())
 	}
 
 	resp = &GroupMsgListResp{}

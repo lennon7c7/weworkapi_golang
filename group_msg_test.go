@@ -22,16 +22,26 @@ func TestGroupMsgList(t *testing.T) {
 		return
 	}
 
-	// 创建 企业群发 给 客户
+	// 企业群发 给 客户
 	req := weworkapi_golang.GroupMsgListReq{
-		ChatType:  "single",
-		StartTime: 1618130999,
-		EndTime:   1620023059,
-		Creator:   "OuYangXiongDi",
+		ChatType: "single",
+		//StartTime: 1622881345,
+		//EndTime:   1622908799,
+		Creator: "OuYangXiongDi",
 		//FilterType: 0,
-		//Limit:      0,
+		//Limit:      100,
 		//Cursor:     "",
 	}
+	// 企业群发 给 客户群
+	//req = weworkapi_golang.GroupMsgListReq{
+	//	ChatType:  "group",
+	//	//StartTime: 1622881345,
+	//	//EndTime:   1622908799,
+	//	Creator:   "OuYangXiongDi",
+	//	//FilterType: 0,
+	//	Limit:      100,
+	//	//Cursor:     "",
+	//}
 	resp, err := service.GroupMsgList(&req)
 	if err != nil {
 		t.Error("GroupMsgList err：" + err.Error())
@@ -146,19 +156,24 @@ func TestGroupMsgAdd(t *testing.T) {
 			"wmuA1sCQAAdGyPSa04j8RJgsP71TV86Q",
 			"wmuA1sCQAAFvSnuhRsUbc5JZH7aqZmFA",
 		},
-		Text: struct {
-			Content string `json:"content"`
-		}{Content: "日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺，疑是银河落九天。"},
 		Sender: "OuYangXiongDi",
 	}
+	req.Text = &weworkapi_golang.GroupWelcomeTemplateText{Content: "稻花香里说丰年。听取蛙声一片。"}
 	// 创建 企业群发 给 客户群
-	req = weworkapi_golang.GroupMsgAddReq{
-		ChatType: "group",
-		Text: struct {
-			Content string `json:"content"`
-		}{Content: "峨眉山月半轮秋，影入平羌江水流。 夜发清溪向三峡，思君不见下渝州。"},
-		Sender: "OuYangXiongDi",
-	}
+	//req = weworkapi_golang.GroupMsgAddReq{
+	//	ChatType: "group",
+	//	Text: struct {
+	//		Content string `json:"content"`
+	//	}{Content: "峨眉山月半轮秋，影入平羌江水流。 夜发清溪向三峡，思君不见下渝州。"},
+	//	Sender: "OuYangXiongDi",
+	//}
+	//req = weworkapi_golang.GroupMsgAddReq{
+	//	ChatType: "group",
+	//	Text: struct {
+	//		Content string `json:"content"`
+	//	}{Content: "山有木兮木有枝，心悦君兮君不知。——佚名《越人歌》"},
+	//	Sender: "OuYangXiongDi",
+	//}
 	resp, err := service.GroupMsgAdd(&req)
 	if err != nil {
 		t.Error("GroupMsgAdd err：" + err.Error())
