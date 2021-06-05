@@ -7,6 +7,54 @@ import (
 	"net/url"
 )
 
+type ExternalContactGet struct {
+	ExternalUserid  string `json:"external_userid"`
+	Name            string `json:"name"`
+	Position        string `json:"position"`
+	Avatar          string `json:"avatar"`
+	CorpName        string `json:"corp_name"`
+	CorpFullName    string `json:"corp_full_name"`
+	Type            int    `json:"type"`
+	Gender          int    `json:"gender"`
+	Unionid         string `json:"unionid"`
+	ExternalProfile struct {
+		ExternalAttr []struct {
+			Type int    `json:"type"`
+			Name string `json:"name"`
+			Text struct {
+				Value string `json:"value"`
+			} `json:"text,omitempty"`
+			Web struct {
+				URL   string `json:"url"`
+				Title string `json:"title"`
+			} `json:"web,omitempty"`
+			Miniprogram struct {
+				Appid    string `json:"appid"`
+				Pagepath string `json:"pagepath"`
+				Title    string `json:"title"`
+			} `json:"miniprogram,omitempty"`
+		} `json:"external_attr"`
+	} `json:"external_profile"`
+}
+
+type ExternalContactFollowUser struct {
+	Userid      string `json:"userid"`
+	Remark      string `json:"remark"`
+	Description string `json:"description"`
+	Createtime  int    `json:"createtime"`
+	Tags        []struct {
+		GroupName string `json:"group_name"`
+		TagName   string `json:"tag_name"`
+		TagID     string `json:"tag_id"`
+		Type      int    `json:"type"`
+	} `json:"tags,omitempty"`
+	RemarkCorpName string   `json:"remark_corp_name,omitempty"`
+	RemarkMobiles  []string `json:"remark_mobiles,omitempty"`
+	OperUserid     string   `json:"oper_userid"`
+	AddWay         int      `json:"add_way"`
+	State          string   `json:"state,omitempty"`
+}
+
 type ExternalContactReq struct {
 	UserID string `json:"userid"`
 	Cursor string `json:"cursor"`
@@ -31,59 +79,20 @@ type ExternalContactEditCorpTagReq struct {
 
 type ExternalContactGetResp struct {
 	core.Error
-	ExternalContact struct {
-		ExternalUserid  string `json:"external_userid"`
-		Name            string `json:"name"`
-		Position        string `json:"position"`
-		Avatar          string `json:"avatar"`
-		CorpName        string `json:"corp_name"`
-		CorpFullName    string `json:"corp_full_name"`
-		Type            int    `json:"type"`
-		Gender          int    `json:"gender"`
-		Unionid         string `json:"unionid"`
-		ExternalProfile struct {
-			ExternalAttr []struct {
-				Type int    `json:"type"`
-				Name string `json:"name"`
-				Text struct {
-					Value string `json:"value"`
-				} `json:"text,omitempty"`
-				Web struct {
-					URL   string `json:"url"`
-					Title string `json:"title"`
-				} `json:"web,omitempty"`
-				Miniprogram struct {
-					Appid    string `json:"appid"`
-					Pagepath string `json:"pagepath"`
-					Title    string `json:"title"`
-				} `json:"miniprogram,omitempty"`
-			} `json:"external_attr"`
-		} `json:"external_profile"`
-	} `json:"external_contact"`
-	FollowUser []struct {
-		Userid      string `json:"userid"`
-		Remark      string `json:"remark"`
-		Description string `json:"description"`
-		Createtime  int    `json:"createtime"`
-		Tags        []struct {
-			GroupName string `json:"group_name"`
-			TagName   string `json:"tag_name"`
-			TagID     string `json:"tag_id"`
-			Type      int    `json:"type"`
-		} `json:"tags,omitempty"`
-		RemarkCorpName string   `json:"remark_corp_name,omitempty"`
-		RemarkMobiles  []string `json:"remark_mobiles,omitempty"`
-		OperUserid     string   `json:"oper_userid"`
-		AddWay         int      `json:"add_way"`
-		State          string   `json:"state,omitempty"`
-	} `json:"follow_user"`
-	NextCursor string `json:"next_cursor"`
+	ExternalContact *ExternalContactGet          `json:"external_contact"`
+	FollowUser      []*ExternalContactFollowUser `json:"follow_user"`
+	NextCursor      string                       `json:"next_cursor"`
+}
+
+type ExternalContactBatchGet struct {
+	ExternalContact *ExternalContactGet        `json:"external_contact"`
+	FollowInfo      *ExternalContactFollowUser `json:"follow_info"`
 }
 
 type ExternalContactBatchGetResp struct {
 	core.Error
-	ExternalContactList []ExternalContactGetResp `json:"external_contact_list"`
-	NextCursor          string                   `json:"next_cursor"`
+	ExternalContactList []*ExternalContactBatchGet `json:"external_contact_list"`
+	NextCursor          string                     `json:"next_cursor"`
 }
 
 // 获取客户列表
@@ -156,7 +165,7 @@ func (s *Server) ExternalContactBatchGet(req *ExternalContactReq) (resp *Externa
 
 	resp = &ExternalContactBatchGetResp{}
 
-	var externalContactList []ExternalContactGetResp
+	var externalContactList []*ExternalContactBatchGet
 	for {
 		err = core.PostJson(s.AuthToken2url(u, token), req, resp)
 		if err != nil {
