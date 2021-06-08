@@ -7,6 +7,12 @@ import (
 	"net/url"
 )
 
+const (
+	// 该成员添加此外部联系人所打标签类型, 1-企业设置, 2-用户自定义
+	ExternalContactTagType1 = 1
+	ExternalContactTagType2 = 2
+)
+
 type ExternalContactGet struct {
 	ExternalUserid  string `json:"external_userid"`
 	Name            string `json:"name"`
@@ -46,8 +52,21 @@ type ExternalContactFollowUser struct {
 		GroupName string `json:"group_name"`
 		TagName   string `json:"tag_name"`
 		TagID     string `json:"tag_id"`
-		Type      int    `json:"type"`
+		Type      int    `json:"type"` // 该成员添加此外部联系人所打标签类型, 1-企业设置, 2-用户自定义
 	} `json:"tags,omitempty"`
+	RemarkCorpName string   `json:"remark_corp_name,omitempty"`
+	RemarkMobiles  []string `json:"remark_mobiles,omitempty"`
+	OperUserid     string   `json:"oper_userid"`
+	AddWay         int      `json:"add_way"`
+	State          string   `json:"state,omitempty"`
+}
+
+type ExternalContactFollowInfo struct {
+	Userid         string   `json:"userid"`
+	Remark         string   `json:"remark"`
+	Description    string   `json:"description"`
+	Createtime     int      `json:"createtime"`
+	TagID          []string `json:"tag_id"`
 	RemarkCorpName string   `json:"remark_corp_name,omitempty"`
 	RemarkMobiles  []string `json:"remark_mobiles,omitempty"`
 	OperUserid     string   `json:"oper_userid"`
@@ -86,7 +105,7 @@ type ExternalContactGetResp struct {
 
 type ExternalContactBatchGet struct {
 	ExternalContact *ExternalContactGet        `json:"external_contact"`
-	FollowInfo      *ExternalContactFollowUser `json:"follow_info"`
+	FollowInfo      *ExternalContactFollowInfo `json:"follow_info"`
 }
 
 type ExternalContactBatchGetResp struct {
