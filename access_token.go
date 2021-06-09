@@ -29,7 +29,7 @@ func (d *DefaultAccessTokenServer) Token() (token string, err error) {
 		resp *AccessTokenResp
 	)
 
-	token, _ = util.CacheGetString("cachekey_of_weworkapi_golang_token")
+	token, _ = util.CacheGetString(d.CorpID + "-cachekey_of_weworkapi_golang_token")
 	if token != "" {
 		return
 	}
@@ -43,7 +43,7 @@ func (d *DefaultAccessTokenServer) Token() (token string, err error) {
 			return
 		}
 
-		err = util.CacheSetString("cachekey_of_weworkapi_golang_token", resp.AccessToken, time.Hour*1)
+		err = util.CacheSetString(d.CorpID+"-cachekey_of_weworkapi_golang_token", resp.AccessToken, time.Hour*1)
 		if err != nil {
 			return
 		}
